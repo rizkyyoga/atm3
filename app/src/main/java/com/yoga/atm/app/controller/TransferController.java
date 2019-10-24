@@ -137,20 +137,55 @@ public class TransferController {
 		ModelAndView view = new ModelAndView();
 		try {
 			Account account = (Account) request.getSession().getAttribute("account");
-			Account accDest = accountService.findByAccountNumber(destination).get(0);
-			account.setBalance(account.getBalance() - Double.valueOf(amount));
-			accDest.setBalance(accDest.getBalance() + Double.valueOf(amount));
-			Transaction transaction = new Transaction(TransactionType.TRANSFER, account, Double.valueOf(amount),
-					new Date(), accDest, reference);
-			account = accountService.save(account);
-			accDest = accountService.save(accDest);
-			transactionService.save(transaction);
-			request.getSession().setAttribute("account", account);
-			redirectAttributes.addFlashAttribute("destination", destination);
-			redirectAttributes.addFlashAttribute("amount", amount);
-			redirectAttributes.addFlashAttribute("reference", reference);
-			redirectAttributes.addFlashAttribute("balance", account.getBalance());
-			view = new ModelAndView("redirect:/transferSummary");
+			String message = "";
+			boolean stoper = false;
+			if (!destination.matches("[0-9]+")) {
+				message += env.getProperty("app.invalid.account");
+				stoper = true;
+			}
+
+			List<Account> listAccount = accountService.findByAccountNumber(destination);
+			if (listAccount.size() <= 0) {
+				message += env.getProperty("app.invalid.account");
+				stoper = true;
+			}
+			if (!amount.matches("[0-9]+")) {
+				message += env.getProperty("app.amount.number");
+				stoper = true;
+			} else {
+				if (Long.valueOf(amount) < 1) {
+					message += env.getProperty("app.amount.mintransfer");
+					stoper = true;
+				}
+				if (Long.valueOf(amount) > 1000) {
+					message += env.getProperty("app.amount.maxtransfer");
+					stoper = true;
+				}
+				if (Long.valueOf(amount) > account.getBalance()) {
+					message += env.getProperty("app.amount.insufficient") + account.getBalance() + "<br>";
+					stoper = true;
+				}
+			}
+
+			if (stoper) {
+				view = new ModelAndView("redirect:/transfer");
+				redirectAttributes.addFlashAttribute("message", message);
+			} else {
+				Account accDest = accountService.findByAccountNumber(destination).get(0);
+				account.setBalance(account.getBalance() - Double.valueOf(amount));
+				accDest.setBalance(accDest.getBalance() + Double.valueOf(amount));
+				Transaction transaction = new Transaction(TransactionType.TRANSFER, account, Double.valueOf(amount),
+						new Date(), accDest, reference);
+				account = accountService.save(account);
+				accDest = accountService.save(accDest);
+				transactionService.save(transaction);
+				request.getSession().setAttribute("account", account);
+				redirectAttributes.addFlashAttribute("destination", destination);
+				redirectAttributes.addFlashAttribute("amount", amount);
+				redirectAttributes.addFlashAttribute("reference", reference);
+				redirectAttributes.addFlashAttribute("balance", account.getBalance());
+				view = new ModelAndView("redirect:/transferSummary");
+			}
 		} catch (Exception e) {
 			view = new ModelAndView("redirect:/");
 			redirectAttributes.addFlashAttribute("message", env.getProperty("app.unknown.error"));
