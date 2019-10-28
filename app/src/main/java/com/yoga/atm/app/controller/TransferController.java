@@ -149,6 +149,7 @@ public class TransferController {
 				message += env.getProperty("app.invalid.account");
 				stoper = true;
 			}
+			amount = amount.replace(".00", "");
 			if (!amount.matches("[0-9]+")) {
 				message += env.getProperty("app.amount.number");
 				stoper = true;
