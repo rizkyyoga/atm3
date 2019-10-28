@@ -168,7 +168,7 @@ public class TransferController {
 			}
 
 			if (stoper) {
-				view = new ModelAndView("redirect:/transfer");
+				view = new ModelAndView("redirect:/transaction");
 				redirectAttributes.addFlashAttribute("message", message);
 			} else {
 				Account accDest = accountService.findByAccountNumber(destination).get(0);
