@@ -89,6 +89,11 @@
 						</div>
 					</div>
 				</div>
+				<div class="row">
+					<div class="col-xs-9">
+						<span class="text-center col-xs-12" style="color: red;">${ message }</span>
+					</div>
+				</div>
 				<!-- // END OPTIONS-->
 			</div>
 			<!--  // END column-->
