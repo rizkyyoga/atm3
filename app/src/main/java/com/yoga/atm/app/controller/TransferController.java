@@ -41,6 +41,9 @@ public class TransferController {
 	public ModelAndView transferDestination(HttpServletRequest request, RedirectAttributes redirectAttributes) {
 		ModelAndView view = new ModelAndView();
 		try {
+			Account account = (Account) request.getSession().getAttribute("account");
+			if (account == null)
+				return new ModelAndView("redirect:/");
 			view.setViewName("transfer/destination");
 		} catch (Exception e) {
 			request.getSession().invalidate();
@@ -55,6 +58,9 @@ public class TransferController {
 			@RequestParam(value = "destination", required = true) String destination) {
 		ModelAndView view = new ModelAndView();
 		try {
+			Account account = (Account) request.getSession().getAttribute("account");
+			if (account == null)
+				return new ModelAndView("redirect:/");
 			String message = "";
 			boolean stoper = false;
 			if (!destination.matches("[0-9]+")) {
@@ -90,6 +96,8 @@ public class TransferController {
 		ModelAndView view = new ModelAndView();
 		try {
 			Account account = (Account) request.getSession().getAttribute("account");
+			if (account == null)
+				return new ModelAndView("redirect:/");
 			String message = "";
 			boolean stoper = false;
 			if (!amount.matches("[0-9]+")) {
@@ -137,6 +145,8 @@ public class TransferController {
 		ModelAndView view = new ModelAndView();
 		try {
 			Account account = (Account) request.getSession().getAttribute("account");
+			if (account == null)
+				return new ModelAndView("redirect:/");
 			String message = "";
 			boolean stoper = false;
 			if (!destination.matches("[0-9]+")) {

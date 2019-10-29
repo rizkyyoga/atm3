@@ -45,6 +45,8 @@ public class ViewTransactionController {
 		ModelAndView view = new ModelAndView();
 		try {
 			Account account = (Account) request.getSession().getAttribute("account");
+			if (account == null)
+				return new ModelAndView("redirect:/");
 			formattedList = new ArrayList<Map<String, String>>();
 			List<Transaction> listTransaction = transactionService.findNTransaction(account.getAccountNumber(),
 					nTransaction);

@@ -42,6 +42,9 @@ public class WelcomeController {
 	public ModelAndView inputAccountNumber(HttpServletRequest request, RedirectAttributes redirectAttributes) {
 		ModelAndView view = new ModelAndView();
 		try {
+			Account account = (Account) request.getSession().getAttribute("account");
+			if (account != null)
+				return new ModelAndView("redirect:/transaction");
 			view.setViewName("welcome/inputAccountNumber");
 		} catch (Exception e) {
 			view = new ModelAndView("redirect:/");
@@ -79,6 +82,9 @@ public class WelcomeController {
 			@RequestParam(value = "an", required = true) String accountNumber) {
 		ModelAndView view = new ModelAndView();
 		try {
+			Account account = (Account) request.getSession().getAttribute("account");
+			if (account != null)
+				return new ModelAndView("redirect:/transaction");
 			boolean stoper = false;
 			String message = "";
 			if (accountNumber.length() != 6) {
@@ -109,6 +115,9 @@ public class WelcomeController {
 			@RequestParam(value = "pin", required = true) String pin) {
 		ModelAndView view = new ModelAndView();
 		try {
+			Account account = (Account) request.getSession().getAttribute("account");
+			if (account != null)
+				return new ModelAndView("redirect:/transaction");
 			boolean stoper = false;
 			String message = "";
 			if (pin.length() != 6) {
@@ -130,8 +139,8 @@ public class WelcomeController {
 				view = new ModelAndView("redirect:/");
 				redirectAttributes.addFlashAttribute("message", message);
 			} else {
-				Account account = listAccount.get(0);
-				request.getSession().setAttribute("account", account);
+				Account accounta = listAccount.get(0);
+				request.getSession().setAttribute("account", accounta);
 				view = new ModelAndView("redirect:/transaction");
 			}
 		} catch (Exception e) {
@@ -142,7 +151,7 @@ public class WelcomeController {
 	}
 
 	private Function<String, Account> mapToItem = (line) -> {
-		String[] p = line.split(",");// a CSV has comma separated lines
+		String[] p = line.split(";");// a CSV has comma separated lines
 		Account item = new Account();
 		item.setName(p[0]);
 		item.setPin(p[1]);

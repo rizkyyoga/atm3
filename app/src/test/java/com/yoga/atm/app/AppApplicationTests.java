@@ -15,6 +15,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpSession;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -40,16 +41,26 @@ class AppApplicationTests {
 	@Autowired
 	private TransactionRepository transactionService;
 
+	@BeforeEach
+	public void setup() {
+		transactionService.deleteAll();
+		Account acc = new Account();
+		acc.setAccountNumber("100000");
+		acc.setPin("100000");
+		acc.setName("java");
+		acc.setBalance(200.0);
+		accountService.save(acc);
+		acc = new Account();
+		acc.setAccountNumber("200000");
+		acc.setPin("200000");
+		acc.setName("java2");
+		acc.setBalance(300.0);
+		accountService.save(acc);
+	}
+
 	// TESTCASE #1
 	@Test
 	void testcase1() throws Exception {
-		transactionService.deleteAll();
-		Account account = new Account();
-		account.setAccountNumber("100000");
-		account.setPin("100000");
-		account.setName("java");
-		account.setBalance(200.0);
-		accountService.save(account);
 		Account proofAccount = accountService.findByAccountNumber("100000").get(0);
 		assertEquals(proofAccount.getAccountNumber(), "100000");
 		assertEquals(proofAccount.getPin(), "100000");
@@ -60,13 +71,6 @@ class AppApplicationTests {
 	// TESTCASE #2
 	@Test
 	void testcase2() throws Exception {
-		transactionService.deleteAll();
-		Account account = new Account();
-		account.setAccountNumber("200000");
-		account.setPin("200000");
-		account.setName("java2");
-		account.setBalance(300.0);
-		account = accountService.save(account);
 		List<Account> proofAccount = (List<Account>) accountService.findAll();
 		boolean isInList = false;
 		for (Account a : proofAccount) {
@@ -81,13 +85,6 @@ class AppApplicationTests {
 	// TESTCASE #3
 	@Test
 	void testcase3() throws Exception {
-		transactionService.deleteAll();
-		Account acc = new Account();
-		acc.setAccountNumber("100000");
-		acc.setPin("100000");
-		acc.setName("java");
-		acc.setBalance(200.0);
-		accountService.save(acc);
 		Map<String, Object> sessionAttrs = new HashMap<>();
 		Account account = accountService.findByAccountNumber("100000").get(0);
 		double balance = account.getBalance();
@@ -103,13 +100,6 @@ class AppApplicationTests {
 	// TESTCASE #4
 	@Test
 	void testcase4() throws Exception {
-		transactionService.deleteAll();
-		Account acc = new Account();
-		acc.setAccountNumber("100000");
-		acc.setPin("100000");
-		acc.setName("java");
-		acc.setBalance(200.0);
-		accountService.save(acc);
 		Map<String, Object> sessionAttrs = new HashMap<>();
 		Account account = accountService.findByAccountNumber("100000").get(0);
 		sessionAttrs.put("account", account);
@@ -121,19 +111,6 @@ class AppApplicationTests {
 	// TESTCASE #5
 	@Test
 	void testcase5() throws Exception {
-		transactionService.deleteAll();
-		Account acc = new Account();
-		acc.setAccountNumber("100000");
-		acc.setPin("100000");
-		acc.setName("java");
-		acc.setBalance(200.0);
-		accountService.save(acc);
-		acc = new Account();
-		acc.setAccountNumber("200000");
-		acc.setPin("200000");
-		acc.setName("java2");
-		acc.setBalance(300.0);
-		accountService.save(acc);
 		Map<String, Object> sessionAttrs = new HashMap<>();
 		Account account = accountService.findByAccountNumber("100000").get(0);
 		double balance = account.getBalance();
@@ -153,58 +130,32 @@ class AppApplicationTests {
 	// TESTCASE #6
 	@Test
 	void testcase6() throws Exception {
-		transactionService.deleteAll();
-		Account acc = new Account();
-		acc.setAccountNumber("100000");
-		acc.setPin("100000");
-		acc.setName("java");
-		acc.setBalance(200.0);
-		accountService.save(acc);
-		acc = new Account();
-		acc.setAccountNumber("200000");
-		acc.setPin("200000");
-		acc.setName("java2");
-		acc.setBalance(300.0);
-		accountService.save(acc);
 		Map<String, Object> sessionAttrs = new HashMap<>();
 		Account account = accountService.findByAccountNumber("100000").get(0);
 		sessionAttrs.put("account", account);
 		this.mockMvc
 				.perform(post("/transfer").param("destination", "200000").param("reference", "123456")
 						.param("amount", "210").sessionAttrs(sessionAttrs))
-				.andExpect(redirectedUrl("/transfer"))
+				.andExpect(redirectedUrl("/transaction"))
 				.andExpect(flash().attribute("message", "Insufficient balance $" + account.getBalance() + "<br>"));
 	}
 
 	// TESTCASE #7
 	@Test
 	void testcase7() throws Exception {
-		transactionService.deleteAll();
-		Account acc = new Account();
-		acc.setAccountNumber("100000");
-		acc.setPin("100000");
-		acc.setName("java");
-		acc.setBalance(200.0);
-		accountService.save(acc);
 		Map<String, Object> sessionAttrs = new HashMap<>();
 		Account account = accountService.findByAccountNumber("100000").get(0);
 		sessionAttrs.put("account", account);
 		this.mockMvc
 				.perform(post("/transfer").param("destination", "247819").param("reference", "123456")
 						.param("amount", "10").sessionAttrs(sessionAttrs))
-				.andExpect(redirectedUrl("/transfer")).andExpect(flash().attribute("message", "Invalid account<br>"));
+				.andExpect(redirectedUrl("/transaction"))
+				.andExpect(flash().attribute("message", "Invalid account<br>"));
 	}
 
 	// TESTCASE #8
 	@Test
 	void testcase8() throws Exception {
-		transactionService.deleteAll();
-		Account acc = new Account();
-		acc.setAccountNumber("100000");
-		acc.setPin("100000");
-		acc.setName("java");
-		acc.setBalance(200.0);
-		accountService.save(acc);
 		Map<String, Object> sessionAttrs = new HashMap<>();
 		Account account = accountService.findByAccountNumber("100000").get(0);
 		sessionAttrs.put("account", account);
@@ -226,19 +177,6 @@ class AppApplicationTests {
 	// TESTCASE #9
 	@Test
 	void testcase9() throws Exception {
-		transactionService.deleteAll();
-		Account acc = new Account();
-		acc.setAccountNumber("100000");
-		acc.setPin("100000");
-		acc.setName("java");
-		acc.setBalance(200.0);
-		accountService.save(acc);
-		acc = new Account();
-		acc.setAccountNumber("200000");
-		acc.setPin("200000");
-		acc.setName("java2");
-		acc.setBalance(300.0);
-		accountService.save(acc);
 		Account from = accountService.findByAccountNumber("100000").get(0);
 		Account to = accountService.findByAccountNumber("200000").get(0);
 		for (int i = 0; i < 5; i++) {
@@ -271,19 +209,6 @@ class AppApplicationTests {
 	// TESTCASE #10
 	@Test
 	void testcase10() throws Exception {
-		transactionService.deleteAll();
-		Account acc = new Account();
-		acc.setAccountNumber("100000");
-		acc.setPin("100000");
-		acc.setName("java");
-		acc.setBalance(200.0);
-		accountService.save(acc);
-		acc = new Account();
-		acc.setAccountNumber("200000");
-		acc.setPin("200000");
-		acc.setName("java2");
-		acc.setBalance(300.0);
-		accountService.save(acc);
 		Account from = accountService.findByAccountNumber("100000").get(0);
 		Account to = accountService.findByAccountNumber("200000").get(0);
 		Calendar c = Calendar.getInstance();

@@ -31,6 +31,8 @@ public class TransactionController {
 		ModelAndView view = new ModelAndView();
 		try {
 			Account account = (Account) request.getSession().getAttribute("account");
+			if (account == null)
+				return new ModelAndView("redirect:/");
 			DecimalFormat formatter = new DecimalFormat("#,###.00");
 			view.addObject("accountNumber", account.getAccountNumber());
 			view.addObject("balance", formatter.format(account.getBalance()));

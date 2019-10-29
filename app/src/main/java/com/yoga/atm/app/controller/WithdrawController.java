@@ -42,6 +42,8 @@ public class WithdrawController {
 		ModelAndView view = new ModelAndView();
 		try {
 			Account account = (Account) request.getSession().getAttribute("account");
+			if (account == null)
+				return new ModelAndView("redirect:/");
 			view.addObject("accountNumber", account.getAccountNumber());
 			view.setViewName("withdraw/index");
 		} catch (Exception e) {
@@ -58,6 +60,8 @@ public class WithdrawController {
 		ModelAndView view = new ModelAndView();
 		try {
 			Account account = (Account) request.getSession().getAttribute("account");
+			if (account == null)
+				return new ModelAndView("redirect:/");
 			String message = "";
 			boolean goToSummary = true;
 			if (!amount.matches("[0-9]+")) {
